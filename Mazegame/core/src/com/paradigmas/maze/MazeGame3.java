@@ -1,10 +1,10 @@
 // TODOLIST
-// Implementar câmera FEITO
-// Renderizar mapa FEITO
-// Colisão FEITO
+// Implementar câmera - FEITO
+// Renderizar mapa - FEITO
+// Colisão
 // Tela menu
 // Tela quiz
-// Levels MAIS OU MENOS
+// Levels
 
 
 package com.paradigmas.maze;
@@ -15,24 +15,17 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.BitmapFont.BitmapFontData;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 
-public class MazeGame extends Game {
-	
-	private BitmapFont font;
-    private boolean nearChestMessageVisible;
-
-	
+public class MazeGame3 extends Game {
     SpriteBatch batch;
     Texture spriteSheet;
     TextureRegion currentFrame;
     
+    Texture wallTexture_rc;
     Texture wallTexture;
     Texture groundTexture;
     Texture chestTexture;
@@ -43,9 +36,8 @@ public class MazeGame extends Game {
     public static int screenHeight, screenWidth;
 
     private int CharPosX, CharPosY;
-    private int chestPosX, chestPosY;
     
-    private float moveSpeed = 12f; //VELOCIDADE DE MOVIMENTO DO PERSONAGEM
+    private float moveSpeed = 6f; //VELOCIDADE DE MOVIMENTO DO PERSONAGEM
     
     private int spriteWidth = 16;
     private int spriteHeight = 20;
@@ -71,29 +63,22 @@ public class MazeGame extends Game {
         //MATERIAIS USÁVEIS
         groundTexture = new Texture(Gdx.files.internal("sceneMaterials/ground.png"));
         wallTexture = new Texture(Gdx.files.internal("sceneMaterials/wall.png"));
-                
+        wallTexture_rc = new Texture(Gdx.files.internal("sceneMaterials/wall_rc.png"));
         chestTexture = new Texture(Gdx.files.internal("sceneMaterials/chest.png"));
-
+        
         camera = new OrthographicCamera();
         camera.setToOrtho(false, screenWidth, screenHeight);
         
         loadLevel("level01.txt");
-        
-        loadFont();
-        
-        nearChestMessageVisible = false;
         
     }
 
     public void render() {
         inputHandle();
         animationHandle();
-        isNearChest();
         ScreenUtils.clear(0, 0, 0, 0);
         
-        //camera.position.set(CharPosX + spriteWidth * scale / 2, CharPosY + spriteHeight * scale / 2, 0); // centralizada na tela
-        camera.position.set(CharPosX, CharPosY, 0);
-
+        camera.position.set(CharPosX + spriteWidth * scale / 2, CharPosY + spriteHeight * scale / 2, 0); // centralizada na tela
         camera.update();
 
         //controle de pos
@@ -110,9 +95,7 @@ public class MazeGame extends Game {
         
         batch.setProjectionMatrix(camera.combined);
         
-        batch.draw(currentFrame, CharPosX - (spriteWidth * scale /2), CharPosY - (spriteHeight * scale / 2), spriteWidth * scale, spriteHeight * scale);
-        
-        renderChestMessage();
+        batch.draw(currentFrame, CharPosX - (spriteWidth/2), CharPosY - (spriteHeight/2), spriteWidth * scale, spriteHeight * scale);
         
         batch.end();
     }
@@ -120,45 +103,28 @@ public class MazeGame extends Game {
     public void dispose() {
         batch.dispose();
         spriteSheet.dispose();
-        
     }
 
     private void inputHandle() {
-        int newCharPosX = CharPosX;
-        int newCharPosY = CharPosY;
 
+    	
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            newCharPosY += moveSpeed;
+            CharPosY += moveSpeed;
             lastKeyPressed = Input.Keys.W;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            newCharPosY -= moveSpeed;
-            lastKeyPressed = Input.Keys.S;
+        	lastKeyPressed = Input.Keys.S;
+            CharPosY -= moveSpeed;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            newCharPosX -= moveSpeed;
-            lastKeyPressed = Input.Keys.A;
+        	lastKeyPressed = Input.Keys.A;
+            CharPosX -= moveSpeed;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            newCharPosX += moveSpeed;
-            lastKeyPressed = Input.Keys.D;
+        	lastKeyPressed = Input.Keys.D;
+        	CharPosX += moveSpeed;
         }
-
-        if (canMoveTo(newCharPosX, newCharPosY)) {
-            CharPosX = newCharPosX;
-            CharPosY = newCharPosY;
-        }
-    }
-
-    private boolean canMoveTo(int x, int y) {
-        int tileX = x / tileSize;
-        int tileY = (levelMatrix.length - y / tileSize);
-
-        if (tileX < 0 || tileX >= levelMatrix[0].length || tileY < 0 || tileY >= levelMatrix.length) {
-            return false;
-        }
-
-        return levelMatrix[tileY][tileX] == 'G';
+        
     }
 
     
@@ -240,26 +206,22 @@ public class MazeGame extends Game {
         levelMatrix = new char[numRows][numCols];
 
         for (int i = 0; i < numRows; i++) {
-            for (int j = 0; j < numCols && j < rows[i].length(); j++) {
+            for (int j = 0; j < numCols; j++) {
                 levelMatrix[i][j] = rows[i].charAt(j);
                 if (levelMatrix[i][j] == '#') {
-                    CharPosX = (j * tileSize) + tileSize/2;
-                    CharPosY = ((levelMatrix.length - i) * tileSize) + tileSize/2;
-                    levelMatrix[i][j] = 'G';
-                }
-                if (levelMatrix[i][j] == 'C') {
-                    chestPosX = (j * tileSize) + tileSize/2;
-                    chestPosY = ((levelMatrix.length - i) * tileSize) + tileSize/2;
+                	CharPosX = j * tileSize;
+                	CharPosY = (levelMatrix.length - 1 - i) * tileSize;
+                	levelMatrix[i][j] = 'G';
                 }
             }
         }
     }
-
+    
     private void renderLevel() {
         for (int i = 0; i < levelMatrix.length; i++) {
             for (int j = 0; j < levelMatrix[0].length; j++) {
                 float x = j * tileSize;
-                float y = (levelMatrix.length - i) * tileSize;
+                float y = (levelMatrix.length - 1 - i) * tileSize;
                 switch (levelMatrix[i][j]) {
                     case 'G':
                         batch.draw(groundTexture, x, y, tileSize, tileSize);
@@ -269,9 +231,11 @@ public class MazeGame extends Game {
                     case ' ':
                     	break;
                     case 'C':
-                        batch.draw(groundTexture, x, y, tileSize, tileSize);
                         batch.draw(chestTexture, x, y, tileSize, tileSize);
                         break;
+                    case 'R':
+                    	batch.draw(wallTexture_rc, x, y, tileSize, tileSize);
+                    	break;
                     case 'W':
                     	batch.draw(wallTexture, x, y, tileSize, tileSize);
                     	break;
@@ -279,62 +243,5 @@ public class MazeGame extends Game {
             }
         }
     }
-    private void loadFont() {
-    	System.out.println("Fonte carregada");
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Minecraft.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
 
-        parameter.size = 16;
-
-        parameter.borderWidth = 1;
-        parameter.borderStraight = true;
-
-        font = generator.generateFont(parameter);
-        
-        generator.dispose();
-    }
-    
-    private void renderChestMessage() {
-        if (nearChestMessageVisible) {
-            String str = "Tesouro encontrado! Pressione Enter para prosseguir.";
-            //String ponto = ".";
-            font.setColor(1, 1, 1, 1);
-
-            float textWidth = font.draw(batch, str, 0, 0).width;
-            
-            float fontX = CharPosX - (textWidth / 2);
-            float fontY = CharPosY - 70;
-
-            font.draw(batch, str, fontX, fontY);
-            //font.draw(batch, ponto, chestPosX, chestPosY);
-        }
-    }
-
-
-
-    private void isNearChest() {
-        float distance = calculateDistance(CharPosX, CharPosY, chestPosX, chestPosY);
-        float threshold = 120.0f;
-
-        if (distance <= threshold) {
-        	nearChestMessageVisible = true;
-            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) ) {
-            	 System.out.println("Clicou");
-            	 //adicionar pulo para outra tela
-             }
-        } else if (distance > threshold) {
-        	nearChestMessageVisible = false;
-        }
-    }
-
-
-    private float calculateDistance(float x1, float y1, float x2, float y2) {
-        float dx = x2 - x1;
-        float dy = y2 - y1;
-        
-        return (float) Math.sqrt(dx * dx + dy * dy);
-    }
-
-
-    
 }
