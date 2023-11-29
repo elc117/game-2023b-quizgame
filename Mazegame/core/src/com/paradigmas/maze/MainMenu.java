@@ -6,7 +6,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 public class MainMenu extends Game {
 
@@ -30,7 +29,7 @@ public class MainMenu extends Game {
         screenWidth = Gdx.graphics.getWidth();
         screenHeight = Gdx.graphics.getHeight();
 
-        loadFont();
+        FontManager.loadFont(12);
         batch = new SpriteBatch();
         background = new Texture(Gdx.files.internal("fundo02.png"));
         
@@ -46,18 +45,21 @@ public class MainMenu extends Game {
 	        batch.begin();
 	        batch.draw(background, 0, 0);
 	        if (!win) {
-		        setFontSize(50);
-		        font.draw(batch, "MazeGame", screenWidth / 2 - (getTextWidth("MazeGame") / 2), screenHeight / 2 + 50);
+		        FontManager.loadFont(50);
+		        font = FontManager.getFont();
+		        font.draw(batch, "MazeGame", screenWidth / 2 - (FontManager.getTextWidth("MazeGame", batch) / 2), screenHeight / 2 + 50);
 		
 		        if (showText) {
-		            setFontSize(20);
-		            font.draw(batch, "Press Enter to start!", screenWidth / 2 - (getTextWidth("Press Enter to start!") / 2), screenHeight / 2 - 10);
+		        	FontManager.loadFont(20);
+		        	font = FontManager.getFont();
+		            font.draw(batch, "Press Enter to start!", screenWidth / 2 - (FontManager.getTextWidth("Press Enter to start!", batch) / 2), screenHeight / 2 - 10);
 		        }
 	        } else if (win) {
-	        	setFontSize(50);
-		        font.draw(batch, "Fim de jogo!", screenWidth / 2 - (getTextWidth("Fim de jogo!") / 2), screenHeight / 2 + font.getLineHeight()/2);
-		        setFontSize(20);
-	            font.draw(batch, "Pontos: " + points + "/" + possiblePoints, screenWidth / 2 - (getTextWidth("Pontos: " + points + "/" + possiblePoints) / 2), screenHeight / 2 - 30);
+	        	FontManager.loadFont(50);
+	        	font = FontManager.getFont();
+		        font.draw(batch, "Fim de jogo!", screenWidth / 2 - (FontManager.getTextWidth("Fim de jogo!", batch) / 2), screenHeight / 2 + font.getLineHeight()/2);
+		        FontManager.loadFont(20);
+	            font.draw(batch, "Pontos: " + points + "/" + possiblePoints, screenWidth / 2 - (FontManager.getTextWidth("Pontos: " + points + "/" + possiblePoints, batch) / 2), screenHeight / 2 - 30);
 	        }
 	
 	        batch.end();
@@ -72,34 +74,6 @@ public class MainMenu extends Game {
         batch.dispose();
         background.dispose();
         font.dispose();
-    }
-
-    private void loadFont() {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Minecraft.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-
-        parameter.size = 50;
-        parameter.borderWidth = 1;
-        parameter.borderStraight = true;
-
-        font = generator.generateFont(parameter);
-        generator.dispose();
-    }
-
-    private float getTextWidth(String text) {
-        return font.draw(batch, text, 0, 0).width;
-    }
-
-    private void setFontSize(int newSize) {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Minecraft.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-
-        parameter.size = newSize;
-        parameter.borderWidth = 1;
-        parameter.borderStraight = true;
-
-        font = generator.generateFont(parameter);
-        generator.dispose();
     }
     
     public void startGameAssets() {
@@ -132,7 +106,6 @@ public class MainMenu extends Game {
 
     private void handleInput() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            System.out.println("Enter pressed - Start the game or perform some action.");
             startGame = true;
         }
     }

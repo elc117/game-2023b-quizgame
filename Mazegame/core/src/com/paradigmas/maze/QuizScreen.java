@@ -5,11 +5,9 @@ package com.paradigmas.maze;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 public class QuizScreen extends Game{
 	//ALTERNATIVES AND WORDING SPECS
@@ -23,7 +21,7 @@ public class QuizScreen extends Game{
     private float delayTime = 3.0f;
 	
 	String wording, alt1, alt2, alt3;
-	int awnser, input;
+	int answer, input;
 	
 	private BitmapFont font;
 	SpriteBatch batch;
@@ -36,7 +34,7 @@ public class QuizScreen extends Game{
 		screenWidth = Gdx.graphics.getWidth();
 		screenHeight = Gdx.graphics.getHeight();
 		
-		loadFont();
+		FontManager.loadFont(12);
 		batch = new SpriteBatch();
 		background = new Texture(Gdx.files.internal("fundo02.png"));
 		
@@ -46,6 +44,7 @@ public class QuizScreen extends Game{
 		setAlt(1, "TESTE");
 		setAlt(2, "TESTE2");
 		setAlt(3, "TESTE3");
+		setanswer(1);
 		
 	}
 	public void render () {
@@ -53,12 +52,10 @@ public class QuizScreen extends Game{
 		batch.begin();
 		
 		batch.draw(background, 0, 0);
+	
 		
-		setAwnser(1);
+		checkAnswer();
 		
-		checkInput();
-		
-		if (input != 0) processAwnser(input);
 		
 		renderQuiz();
 		
@@ -71,7 +68,7 @@ public class QuizScreen extends Game{
             if (delayTime <= 0) {
                 delayInProgress = false;
                 delayTime = 5.0f;
-                if (awnser == input) MainMenu.addPoint();
+                if (answer == input) MainMenu.addPoint();
                 MainMenu.nextLevel();
             }
         }
@@ -92,7 +89,7 @@ public class QuizScreen extends Game{
 		if (N == 2) alt2 = "B) " + Str;
 		if (N == 3) alt3 = "C) " + Str;
 	}
-	private void checkInput() {
+	private void checkAnswer() {
 	    if (Gdx.input.isKeyJustPressed(Keys.A)) {
 	        input = Keys.A;
 	    } else if (Gdx.input.isKeyJustPressed(Keys.B)) {
@@ -100,26 +97,29 @@ public class QuizScreen extends Game{
 	    } else if (Gdx.input.isKeyJustPressed(Keys.C)) {
 	    	input = Keys.C;
 	    }
+	    if (input != 0) processanswer(input);
 	}
 
-	private void processAwnser(int input) {
-	    setFontSize(30);
-	    if (awnser == input) {
-	        font.draw(batch, "Correto! Voce ganhou um ponto!", screenWidth / 2 - getTextWidth("Correto! Voce ganhou um ponto!") / 2, 15 + font.getLineHeight());
+	private void processanswer(int input) {
+
+	    FontManager.loadFont(30);
+	    font = FontManager.getFont();
+	    if (answer == input) {
+	        font.draw(batch, "Correto! Voce ganhou um ponto!", screenWidth / 2 - FontManager.getTextWidth("Correto! Voce ganhou um ponto!", batch) / 2, 15 + font.getLineHeight());
 	        
 
 	        delayInProgress = true;
 	    } else {
-	        font.draw(batch, "Incorreto! Tente na proxima!", screenWidth / 2 - getTextWidth("Incorreto! Tente na proxima!") / 2, 15 + font.getLineHeight());
+	        font.draw(batch, "Incorreto! Tente na proxima!", screenWidth / 2 - FontManager.getTextWidth("Incorreto! Tente na proxima!", batch) / 2, 15 + font.getLineHeight());
 
 	        delayInProgress = true;
 	    }
 	}
 
-	private void setAwnser (int input) {
-		if (input == 1) awnser = Keys.A;
-		if (input == 2) awnser = Keys.B;
-		if (input == 3) awnser = Keys.C;
+	private void setanswer (int input) {
+		if (input == 1) answer = Keys.A;
+		if (input == 2) answer = Keys.B;
+		if (input == 3) answer = Keys.C;
 	}
 	private void renderQuiz () {
 		
@@ -128,39 +128,11 @@ public class QuizScreen extends Game{
 		renderAlt(2, alt2);
 		renderAlt(3, alt3);
 	}
-	private void loadFont() {
-    	System.out.println("Fonte carregada");
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Minecraft.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
 
-        parameter.size = 16;
-
-        parameter.borderWidth = 1;
-        parameter.borderStraight = true;
-
-
-        font = generator.generateFont(parameter);
-        
-        generator.dispose();
-    }
-	
-	private void setFontSize(int newSize) {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Minecraft.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-
-        parameter.size = newSize;
-        parameter.borderWidth = 1;
-        parameter.borderStraight = true;
-
-        font = generator.generateFont(parameter);
-
-        generator.dispose();
-    }
-	
 	private void renderWording(String wording) {
-	    font.setColor(1, 1, 1, 1);
-	    setFontSize(20);
-
+	    FontManager.loadFont(20);
+	    font = FontManager.getFont();
+	    
 	    float maxLineWidth = 650.0f;
 
 	    String[] lines = splitStringByWidth(wording, maxLineWidth);
@@ -173,20 +145,20 @@ public class QuizScreen extends Game{
 	    float fontY = screenHeight - 100;
 
 	    for (String line : lines) {
-	        float textWidth = getTextWidth(line);
+	        float textWidth = FontManager.getTextWidth(line, batch);
 	        fontX -= textWidth / 2;
 	        font.draw(batch, line, fontX, fontY);
 	        fontX = screenWidth / 2;
 	        fontY -= lineHeight;
 	    }
 	    String underscore = "--------------------------------------------------------------------------------";
-		font.draw(batch, underscore, screenWidth/2 - (getTextWidth(underscore)/2), 600 - wordingHeight - 100 - 10);
+		font.draw(batch, underscore, screenWidth/2 - (FontManager.getTextWidth(underscore, batch)/2), 600 - wordingHeight - 100 - 10);
 		wordingHeight+= font.getLineHeight();
 	}
 	
 	private void renderAlt(int N, String wording) {
-	    font.setColor(1, 1, 1, 1);
-	    setFontSize(16);
+	    FontManager.loadFont(16);
+	    font = FontManager.getFont();
 
 	    float maxLineWidth = 650.0f;
 
@@ -214,7 +186,7 @@ public class QuizScreen extends Game{
 
 
 	    for (String line : lines) {
-	        float textWidth = getTextWidth(line);
+	        float textWidth = FontManager.getTextWidth(line, batch);
 	        fontX -= textWidth / 2;
 	        font.draw(batch, line, fontX, fontY);
 	        fontX = screenWidth / 2;
@@ -229,7 +201,7 @@ public class QuizScreen extends Game{
 	    java.util.List<String> lines = new java.util.ArrayList<>();
 
 	    for (String word : words) {
-	        if (getTextWidth(currentLine.toString() + " " + word) <= maxWidth) {
+	        if (FontManager.getTextWidth(currentLine.toString() + " " + word, batch) <= maxWidth) {
 	            currentLine.append(word).append(" ");
 	        } else {
 	            lines.add(currentLine.toString().trim());
@@ -244,9 +216,6 @@ public class QuizScreen extends Game{
 	    return lines.toArray(new String[0]);
 	}
 
-	private float getTextWidth(String text) {
-		return font.draw(batch, text, 0, 0).width;
-	}
 	private void verifyAltSize (int N, float height) {
 		if (N==1) {
 	    	if (alt1Height < 100) alt1Height = 100;

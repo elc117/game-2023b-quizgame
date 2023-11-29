@@ -96,11 +96,11 @@ public class MazeGame extends Game {
         camera.update();
 
         //controle de pos
-        System.out.println(CharPosX);
+        //System.out.println(CharPosX);
 
-        System.out.println(" ");
+        //System.out.println(" ");
 
-        System.out.println(CharPosY);
+        //System.out.println(CharPosY);
         
         if (inGame) {
         	batch.begin();
