@@ -25,6 +25,9 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 public class MazeGame extends Game {
 	
+	private QuizScreen quizScreen;
+	Boolean inGame;
+	
 	private BitmapFont font;
     private boolean nearChestMessageVisible;
 
@@ -59,7 +62,7 @@ public class MazeGame extends Game {
     
     private OrthographicCamera camera;
     
-    public void create() {
+    public void create(int Level) {
     	
     	screenHeight = Gdx.graphics.getHeight();
         screenWidth = Gdx.graphics.getWidth();
@@ -77,11 +80,16 @@ public class MazeGame extends Game {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, screenWidth, screenHeight);
         
-        loadLevel("level01.txt");
+        loadLevel("level"+Level +".txt");
         
         loadFont();
         
         nearChestMessageVisible = false;
+        
+        quizScreen = new QuizScreen();
+        quizScreen.create();
+        
+        inGame = true;
         
     }
 
@@ -103,18 +111,23 @@ public class MazeGame extends Game {
 
         System.out.println(CharPosY);
         
+        if (inGame) {
+        	batch.begin();
+            
+            renderLevel();
+            
+            batch.setProjectionMatrix(camera.combined);
+            
+            batch.draw(currentFrame, CharPosX - (spriteWidth * scale /2), CharPosY - (spriteHeight * scale / 2), spriteWidth * scale, spriteHeight * scale);
+            
+            renderChestMessage();
+            
+            batch.end();
         
-        batch.begin();
-        
-        renderLevel();
-        
-        batch.setProjectionMatrix(camera.combined);
-        
-        batch.draw(currentFrame, CharPosX - (spriteWidth * scale /2), CharPosY - (spriteHeight * scale / 2), spriteWidth * scale, spriteHeight * scale);
-        
-        renderChestMessage();
-        
-        batch.end();
+        }
+        if (!inGame) {
+        	quizScreen.render();
+        }
     }
 
     public void dispose() {
@@ -124,30 +137,32 @@ public class MazeGame extends Game {
     }
 
     private void inputHandle() {
-        int newCharPosX = CharPosX;
-        int newCharPosY = CharPosY;
-
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            newCharPosY += moveSpeed;
-            lastKeyPressed = Input.Keys.W;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            newCharPosY -= moveSpeed;
-            lastKeyPressed = Input.Keys.S;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            newCharPosX -= moveSpeed;
-            lastKeyPressed = Input.Keys.A;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            newCharPosX += moveSpeed;
-            lastKeyPressed = Input.Keys.D;
-        }
-
-        if (canMoveTo(newCharPosX, newCharPosY)) {
-            CharPosX = newCharPosX;
-            CharPosY = newCharPosY;
-        }
+    	if (inGame) {
+	        int newCharPosX = CharPosX;
+	        int newCharPosY = CharPosY;
+	
+	        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+	            newCharPosY += moveSpeed;
+	            lastKeyPressed = Input.Keys.W;
+	        }
+	        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+	            newCharPosY -= moveSpeed;
+	            lastKeyPressed = Input.Keys.S;
+	        }
+	        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+	            newCharPosX -= moveSpeed;
+	            lastKeyPressed = Input.Keys.A;
+	        }
+	        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+	            newCharPosX += moveSpeed;
+	            lastKeyPressed = Input.Keys.D;
+	        }
+	
+	        if (canMoveTo(newCharPosX, newCharPosY)) {
+	            CharPosX = newCharPosX;
+	            CharPosY = newCharPosY;
+	        }
+    	}
     }
 
     private boolean canMoveTo(int x, int y) {
@@ -163,75 +178,81 @@ public class MazeGame extends Game {
 
     
     private void animationHandle () {
-    	if (!(Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.D))) {
-    	    if (lastKeyPressed == Input.Keys.W) {
-    	        currentFrameX = 4;
-    	    }
-    	    if (lastKeyPressed == Input.Keys.A) {
-    	        currentFrameX = 7;
-    	    }
-    	    if (lastKeyPressed == Input.Keys.D) {
-    	        currentFrameX = 10;
-    	    }
-    	    if (lastKeyPressed == Input.Keys.S) {
-    	        currentFrameX = 1;
-    	    }
-    	    currentFrame.setRegion(currentFrameX * spriteWidth, currentFrameY * spriteHeight, spriteWidth, spriteHeight);
-    	    return;
+    	if (inGame) {
+	    	if (!(Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.D))) {
+	    	    if (lastKeyPressed == Input.Keys.W) {
+	    	        currentFrameX = 4;
+	    	    }
+	    	    if (lastKeyPressed == Input.Keys.A) {
+	    	        currentFrameX = 7;
+	    	    }
+	    	    if (lastKeyPressed == Input.Keys.D) {
+	    	        currentFrameX = 10;
+	    	    }
+	    	    if (lastKeyPressed == Input.Keys.S) {
+	    	        currentFrameX = 1;
+	    	    }
+	    	    currentFrame.setRegion(currentFrameX * spriteWidth, currentFrameY * spriteHeight, spriteWidth, spriteHeight);
+	    	    return;
+	    	}
+	
+	    	FrameTime++;
+	    	if (FrameTime == 3) {
+		    	if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+		    		currentFrameX = 3;
+		    	}
+		    	if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+		    		currentFrameX = 6;
+		    	}
+		    	if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+		    		currentFrameX = 9;
+		    	}
+		    	if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+		    		currentFrameX = 0;
+		    	}
+		    	currentFrame.setRegion(currentFrameX * spriteWidth, currentFrameY * spriteHeight, spriteWidth, spriteHeight);
+		    	return;
+	    	}else if (FrameTime == 6) {
+		    	if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+		    		currentFrameX = 4;
+		    	}
+		    	if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+		    		currentFrameX = 7;
+		    	}
+		    	if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+		    		currentFrameX = 10;
+		    	}
+		    	if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+		    		currentFrameX = 1;
+		    	}
+		    	currentFrame.setRegion(currentFrameX * spriteWidth, currentFrameY * spriteHeight, spriteWidth, spriteHeight);
+		    	return;
+	    	} else if (FrameTime == 9) {
+	    		if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+		    		currentFrameX = 5;
+		    	}
+		    	if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+		    		currentFrameX = 8;
+		    	}
+		    	if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+		    		currentFrameX = 11;
+		    	}
+		    	if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+		    		currentFrameX = 2;
+		    	}
+		    	currentFrame.setRegion(currentFrameX * spriteWidth, currentFrameY * spriteHeight, spriteWidth, spriteHeight);
+		    	FrameTime = 0;
+	    	}
     	}
-
-    	FrameTime++;
-    	if (FrameTime == 3) {
-	    	if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-	    		currentFrameX = 3;
-	    	}
-	    	if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-	    		currentFrameX = 6;
-	    	}
-	    	if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-	    		currentFrameX = 9;
-	    	}
-	    	if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-	    		currentFrameX = 0;
-	    	}
-	    	currentFrame.setRegion(currentFrameX * spriteWidth, currentFrameY * spriteHeight, spriteWidth, spriteHeight);
-	    	return;
-    	}else if (FrameTime == 6) {
-	    	if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-	    		currentFrameX = 4;
-	    	}
-	    	if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-	    		currentFrameX = 7;
-	    	}
-	    	if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-	    		currentFrameX = 10;
-	    	}
-	    	if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-	    		currentFrameX = 1;
-	    	}
-	    	currentFrame.setRegion(currentFrameX * spriteWidth, currentFrameY * spriteHeight, spriteWidth, spriteHeight);
-	    	return;
-    	} else if (FrameTime == 9) {
-    		if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-	    		currentFrameX = 5;
-	    	}
-	    	if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-	    		currentFrameX = 8;
-	    	}
-	    	if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-	    		currentFrameX = 11;
-	    	}
-	    	if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-	    		currentFrameX = 2;
-	    	}
-	    	currentFrame.setRegion(currentFrameX * spriteWidth, currentFrameY * spriteHeight, spriteWidth, spriteHeight);
-	    	FrameTime = 0;
-    	}
-    	
     }
     
     private void loadLevel(String filename) {
         FileHandle file = Gdx.files.internal(filename);
+        if (!file.exists()) {
+        	MainMenu.setVictory();
+        	return;
+        }
+        MainMenu.addPossiblePoint();
         String levelString = file.readString();
         String[] rows = levelString.split("\n");
 
@@ -280,7 +301,6 @@ public class MazeGame extends Game {
         }
     }
     private void loadFont() {
-    	System.out.println("Fonte carregada");
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Minecraft.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
 
@@ -313,18 +333,21 @@ public class MazeGame extends Game {
 
 
     private void isNearChest() {
-        float distance = calculateDistance(CharPosX, CharPosY, chestPosX, chestPosY);
-        float threshold = 120.0f;
-
-        if (distance <= threshold) {
-        	nearChestMessageVisible = true;
-            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) ) {
-            	 System.out.println("Clicou");
-            	 //adicionar pulo para outra tela
-             }
-        } else if (distance > threshold) {
-        	nearChestMessageVisible = false;
-        }
+    	if (inGame) {
+	        float distance = calculateDistance(CharPosX, CharPosY, chestPosX, chestPosY);
+	        float threshold = 120.0f;
+	
+	        if (distance <= threshold) {
+	        	nearChestMessageVisible = true;
+	            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) ) {
+	            	 System.out.println("Clicou");
+	            	 inGame= false;
+	            	 this.dispose();
+	             }
+	        } else if (distance > threshold) {
+	        	nearChestMessageVisible = false;
+	        }
+    	}
     }
 
 

@@ -13,6 +13,7 @@ public class DesktopLauncher {
 
 		config.setForegroundFPS(30);
 		config.setTitle("Mazegame");
-		new Lwjgl3Application(new MazeGame(), config);
+		config.setWindowIcon("SceneMaterials/chest.png");
+		new Lwjgl3Application(new MainMenu(), config);
 	}
 }
