@@ -36,6 +36,8 @@ public class MainMenu extends Game {
         game = new MazeGame();
         startGame = false;
         startGameAssets();
+        
+        QuestionsDatabase.initializeQuestions();
     }
 
     public void render() {
@@ -59,6 +61,7 @@ public class MainMenu extends Game {
 	        	font = FontManager.getFont();
 		        font.draw(batch, "Fim de jogo!", screenWidth / 2 - (FontManager.getTextWidth("Fim de jogo!", batch) / 2), screenHeight / 2 + font.getLineHeight()/2);
 		        FontManager.loadFont(20);
+                font = FontManager.getFont();
 	            font.draw(batch, "Pontos: " + points + "/" + possiblePoints, screenWidth / 2 - (FontManager.getTextWidth("Pontos: " + points + "/" + possiblePoints, batch) / 2), screenHeight / 2 - 30);
 	        }
 	
@@ -81,14 +84,14 @@ public class MainMenu extends Game {
     	currentLevel = 1;
     	points = 0;
     	possiblePoints = 0;
-    	game.create(currentLevel);
+    	game.create();
     }
     public void startGame () {
     	game.render();
     }
     public static void nextLevel() {
     	currentLevel++;
-    	game.create(currentLevel);
+    	game.create();
     }
     
     public static void setVictory () {
@@ -117,5 +120,9 @@ public class MainMenu extends Game {
             showText = !showText;
             textBlinkTimer = 0;
         }
+    }
+
+    public static int getCurrentLevel() {
+        return currentLevel;
     }
 }

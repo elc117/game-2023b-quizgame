@@ -40,11 +40,15 @@ public class QuizScreen extends Game{
 		
 		input = 0;
 		
-		setWording ("A");
-		setAlt(1, "TESTE");
-		setAlt(2, "TESTE2");
-		setAlt(3, "TESTE3");
-		setanswer(1);
+		QuestionsDatabase.initializeQuestions();
+		
+		setWording(QuestionsDatabase.getWording());
+		setAlt(1, QuestionsDatabase.getAlt1());
+		setAlt(2, QuestionsDatabase.getAlt2());
+		setAlt(3, QuestionsDatabase.getAlt3());
+		
+		setanswer(QuestionsDatabase.getAnswer());
+
 		
 	}
 	public void render () {
