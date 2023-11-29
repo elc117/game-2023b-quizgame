@@ -1,12 +1,3 @@
-// TODOLIST
-// Implementar câmera FEITO
-// Renderizar mapa FEITO
-// Colisão FEITO
-// Tela menu
-// Tela quiz
-// Levels MAIS OU MENOS
-
-
 package com.paradigmas.maze;
 
 import com.badlogic.gdx.Game;
@@ -159,8 +150,10 @@ public class MazeGame extends Game {
 	        }
 	
 	        if (canMoveTo(newCharPosX, newCharPosY)) {
-	            CharPosX = newCharPosX;
-	            CharPosY = newCharPosY;
+	        	if (canMoveTo(newCharPosX, newCharPosY - spriteHeight - 6)) {
+		            CharPosX = newCharPosX;
+		            CharPosY = newCharPosY;
+	        	}
 	        }
     	}
     }
@@ -173,7 +166,8 @@ public class MazeGame extends Game {
             return false;
         }
 
-        return levelMatrix[tileY][tileX] == 'G';
+        return levelMatrix[tileY][tileX] == 'G' || levelMatrix[tileY][tileX] == 'C';
+    
     }
 
     
@@ -262,7 +256,11 @@ public class MazeGame extends Game {
 
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols && j < rows[i].length(); j++) {
-                levelMatrix[i][j] = rows[i].charAt(j);
+            	if (j < rows[i].length()) {
+                    levelMatrix[i][j] = rows[i].charAt(j);
+                } else {
+                    levelMatrix[i][j] = 'V';
+                }
                 if (levelMatrix[i][j] == '#') {
                     CharPosX = (j * tileSize) + tileSize/2;
                     CharPosY = ((levelMatrix.length - i) * tileSize) + tileSize/2;
@@ -320,7 +318,7 @@ public class MazeGame extends Game {
             //String ponto = ".";
             font.setColor(1, 1, 1, 1);
 
-            float textWidth = font.draw(batch, str, 0, 0).width;
+            float textWidth = font.draw(batch, str, -200, -200).width;
             
             float fontX = CharPosX - (textWidth / 2);
             float fontY = CharPosY - 70;
