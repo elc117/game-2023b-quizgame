@@ -7,6 +7,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.BitmapFont.BitmapFontData;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -52,7 +53,7 @@ public class MazeGame extends Game {
     
     private OrthographicCamera camera;
     
-    public void create() {
+    public void create(int Level) {
     	
     	screenHeight = Gdx.graphics.getHeight();
         screenWidth = Gdx.graphics.getWidth();
@@ -70,7 +71,7 @@ public class MazeGame extends Game {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, screenWidth, screenHeight);
         
-        loadLevel("level"+ MainMenu.getCurrentLevel() +".txt");
+        loadLevel("level"+Level +".txt");
         
         loadFont();
         

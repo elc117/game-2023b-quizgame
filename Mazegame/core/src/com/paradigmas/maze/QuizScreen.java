@@ -2,6 +2,8 @@
 
 package com.paradigmas.maze;
 
+import java.util.Random;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -22,6 +24,7 @@ public class QuizScreen extends Game{
 	
 	String wording, alt1, alt2, alt3;
 	int answer, input;
+	public static int questionIndex = 0;
 	
 	private BitmapFont font;
 	SpriteBatch batch;
@@ -42,14 +45,14 @@ public class QuizScreen extends Game{
 		
 		QuestionsDatabase.initializeQuestions();
 		
-		setWording(QuestionsDatabase.getWording());
-		setAlt(1, QuestionsDatabase.getAlt1());
-		setAlt(2, QuestionsDatabase.getAlt2());
-		setAlt(3, QuestionsDatabase.getAlt3());
+		setWording(QuestionsDatabase.getWording(QuizScreen.questionIndex));
+		setAlt(1, QuestionsDatabase.getAlt1(QuizScreen.questionIndex));
+		setAlt(2, QuestionsDatabase.getAlt2(QuizScreen.questionIndex));
+		setAlt(3, QuestionsDatabase.getAlt3(QuizScreen.questionIndex));
 		
-		setanswer(QuestionsDatabase.getAnswer());
+		setanswer(QuestionsDatabase.getAnswer(QuizScreen.questionIndex));
 
-		
+		questionIndex++;
 	}
 	public void render () {
 		
