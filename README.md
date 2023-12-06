@@ -27,3 +27,24 @@ C = objetivo(esmeralda)
 
 As perguntas sao divididas no arquivo .txt pelo simbolo ';' sendo que a primeira parte da linha no .txt refere-se ao enunciado, a parte 2-3-4 dizem respeito as opcoes que o jogador tem, e a ultima, sobre resposta da pergunta, que pode variar de 1 ate 3, dependendo se ela for A(1), B(2) ou C(3).
         
+## Referências utilizadas no desenvolvimento
+
+- Leitura do TXT do mapa e renderização inspirados em um vídeo sobre Jogo 3d feito em libgdx
+   - Vídeo em questão: https://www.youtube.com/watch?v=0Sj6Ja8Gn5A
+   - Repositório com geração do mapa do autor do vídeo: https://github.com/TheInvader360/arena-roamer/blob/master/arena-roamer/src/com/theinvader360/arenaroamer/World.java
+
+- Assets retirados dos seguintes jogos:
+   - Materiais de cena: Minecraft
+   - Sprite do personagem: Pokemon Fire Red (GBA)
+   - Fonte utilizada no jogo: Minecraft
+   - Fundos de telas: edição e adaptção de materiais do Minecraft
+
+- Função _updateTextBlink_ foi sugerida pelo ChatGPT e aprimorada conforme necessidade e testes posteriores
+
+- Playlist de vídeos tutoriais assistidos pelo grupo para entendimento geral do funcionamento da libgdx: https://www.youtube.com/playlist?list=PLrnO5Pu2zAHKAIjRtTLAXtZKMSA6JWnmf
+
+- Função _getTextWidth_ sugerida pelo ChatGPT e aprimorada conforme necessidade e testes posteriores
+
+- Ideia geral de como renderizar diferentes telas foi concebida depois de dicas do aluno Luis Henrique Cardoso
+
+- Tutorial sobre jogo em 3d feito com libgdx mencionado na apresentação do trabalho (utilizado para definir que não fariamos um jogo 3d): https://www.youtube.com/watch?v=e-3OMXY9bDU
