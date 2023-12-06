@@ -1,9 +1,6 @@
 //TITULO 44 CHAR POR LINHA
 
 package com.paradigmas.maze;
-
-import java.util.Random;
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
