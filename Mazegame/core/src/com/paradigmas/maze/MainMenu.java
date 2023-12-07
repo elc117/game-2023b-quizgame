@@ -3,6 +3,9 @@ package com.paradigmas.maze;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -23,6 +26,8 @@ public class MainMenu extends Game {
     static MazeGame game;
     private static int currentLevel;
     private static int points, possiblePoints;
+    
+    
 
     @Override
     public void create() {
@@ -32,6 +37,8 @@ public class MainMenu extends Game {
         FontManager.loadFont(12);
         batch = new SpriteBatch();
         background = new Texture(Gdx.files.internal("fundo02.png"));
+        
+        Audio.loadBackgroundMusic();
         
         game = new MazeGame();
         startGame = false;
@@ -61,7 +68,6 @@ public class MainMenu extends Game {
 	        	font = FontManager.getFont();
 		        font.draw(batch, "Fim de jogo!", screenWidth / 2 - (FontManager.getTextWidth("Fim de jogo!", batch) / 2), screenHeight / 2 + font.getLineHeight()/2);
 		        FontManager.loadFont(20);
-                font = FontManager.getFont();
 	            font.draw(batch, "Pontos: " + points + "/" + possiblePoints, screenWidth / 2 - (FontManager.getTextWidth("Pontos: " + points + "/" + possiblePoints, batch) / 2), screenHeight / 2 - 30);
 	            QuestionsDatabase.deleteCopiedFile();
 	        }
@@ -85,17 +91,14 @@ public class MainMenu extends Game {
     	currentLevel = 1;
     	points = 0;
     	possiblePoints = 0;
-    	game.create();
-    }
-    public static int getCurrentLevel() {
-    	return currentLevel;
+    	game.create(currentLevel);
     }
     public void startGame () {
     	game.render();
     }
     public static void nextLevel() {
     	currentLevel++;
-    	game.create();
+    	game.create(currentLevel);
     }
     
     public static void setVictory () {
@@ -125,4 +128,6 @@ public class MainMenu extends Game {
             textBlinkTimer = 0;
         }
     }
+    
+    
 }

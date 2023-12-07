@@ -3,10 +3,14 @@ package com.paradigmas.maze;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.BitmapFont.BitmapFontData;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -19,7 +23,6 @@ public class MazeGame extends Game {
 	
 	private BitmapFont font;
     private boolean nearChestMessageVisible;
-
 	
     SpriteBatch batch;
     Texture spriteSheet;
@@ -51,7 +54,7 @@ public class MazeGame extends Game {
     
     private OrthographicCamera camera;
     
-    public void create() {
+    public void create(int Level) {
     	
     	screenHeight = Gdx.graphics.getHeight();
         screenWidth = Gdx.graphics.getWidth();
@@ -69,7 +72,9 @@ public class MazeGame extends Game {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, screenWidth, screenHeight);
         
-        loadLevel("level"+ MainMenu.getCurrentLevel() +".txt");
+        loadLevel("level"+Level +".txt");
+        
+        loadFont();
         
         nearChestMessageVisible = false;
         
@@ -99,6 +104,7 @@ public class MazeGame extends Game {
         //System.out.println(CharPosY);
         
         if (inGame) {
+
         	batch.begin();
             
             renderLevel();
@@ -242,6 +248,7 @@ public class MazeGame extends Game {
         	MainMenu.setVictory();
         	return;
         }
+        
         MainMenu.addPossiblePoint();
         String levelString = file.readString();
         String[] rows = levelString.split("\n");
@@ -294,15 +301,27 @@ public class MazeGame extends Game {
             }
         }
     }
+    private void loadFont() {
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Minecraft.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+
+        parameter.size = 16;
+
+        parameter.borderWidth = 1;
+        parameter.borderStraight = true;
+
+        font = generator.generateFont(parameter);
+        
+        generator.dispose();
+    }
     
     private void renderChestMessage() {
         if (nearChestMessageVisible) {
-            FontManager.loadFont(15);
-            font = FontManager.getFont();
             String str = "Tesouro encontrado! Pressione Enter para prosseguir.";
             //String ponto = ".";
+            font.setColor(1, 1, 1, 1);
 
-            float textWidth = FontManager.getTextWidth(str, batch);
+            float textWidth = font.draw(batch, str, -200, -200).width;
             
             float fontX = CharPosX - (textWidth / 2);
             float fontY = CharPosY - 70;
@@ -322,6 +341,7 @@ public class MazeGame extends Game {
 	        if (distance <= threshold) {
 	        	nearChestMessageVisible = true;
 	            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) ) {
+	            	 System.out.println("Clicou");
 	            	 inGame= false;
 	            	 this.dispose();
 	             }

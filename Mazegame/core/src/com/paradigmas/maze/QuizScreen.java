@@ -1,9 +1,13 @@
 //TITULO 44 CHAR POR LINHA
 
 package com.paradigmas.maze;
+
+import java.util.Random;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -108,14 +112,16 @@ public class QuizScreen extends Game{
 
 	    FontManager.loadFont(30);
 	    font = FontManager.getFont();
-	    if (answer == input) {
+	    if (answer == input) {	
 	        font.draw(batch, "Correto! Voce ganhou um ponto!", screenWidth / 2 - FontManager.getTextWidth("Correto! Voce ganhou um ponto!", batch) / 2, 15 + font.getLineHeight());
+	    
 	        
-
+	        
 	        delayInProgress = true;
 	    } else {
 	        font.draw(batch, "Incorreto! Tente na proxima!", screenWidth / 2 - FontManager.getTextWidth("Incorreto! Tente na proxima!", batch) / 2, 15 + font.getLineHeight());
-
+	        
+	        
 	        delayInProgress = true;
 	    }
 	}
